@@ -28,6 +28,8 @@ pragma solidity 0.8.19;
  * @dev Implements Chainlink VRFv2.5
  */
 contract Raffle {
+    error Raffle__SendMoreEthToEnterRaffle();
+
     uint256 private immutable i_entranceFee;
 
     constructor(uint256 entranceFee) {
@@ -36,6 +38,9 @@ contract Raffle {
 
     function enterRaffle() public payable {
         // Enter the raffle
+        if (msg.value < i_entranceFee) {
+            revert Raffle__SendMoreEthToEnterRaffle();
+        }
     }
 
     function pickWinner() public {}
