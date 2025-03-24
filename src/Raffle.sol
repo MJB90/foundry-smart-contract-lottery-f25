@@ -145,7 +145,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
     //CEI: Checks,Effects,Interactions
     function fulfillRandomWords(
-        uint256 requestId,
+        uint256 /*requestId*/,
         uint256[] calldata randomWords
     ) internal override {
         //Checks ( No checks required)
