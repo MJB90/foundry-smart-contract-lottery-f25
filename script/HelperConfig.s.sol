@@ -33,9 +33,7 @@ contract HelperConfig is CodeConstants, Script {
         networkConfigs[ETH_SEPOLIA_CHAIN_ID] = getSepoliaNetworkConfig();
     }
 
-    function getConfigByChainId(
-        uint256 chainId
-    ) public returns (NetworkConfig memory) {
+    function getConfigByChainId(uint256 chainId) public returns (NetworkConfig memory) {
         if (networkConfigs[chainId].vrfCoordinator != address(0)) {
             return networkConfigs[chainId];
         } else if (chainId == LOCAL_CHAIN_ID) {
@@ -56,11 +54,8 @@ contract HelperConfig is CodeConstants, Script {
         }
         console.log("Creating AnvilEthConfig");
         vm.startBroadcast();
-        VRFCoordinatorV2_5Mock vrfCoordinatorMock = new VRFCoordinatorV2_5Mock(
-            MOCK_BASE_FEE,
-            MOCK_GAS_PRICE_LINK,
-            MOCK_WEI_PER_UNIT_LINK
-        );
+        VRFCoordinatorV2_5Mock vrfCoordinatorMock =
+            new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE_LINK, MOCK_WEI_PER_UNIT_LINK);
         vm.stopBroadcast();
         console.log("vrfCoordinatorMock: ", address(vrfCoordinatorMock));
         localNetworkConfig = NetworkConfig({
@@ -74,19 +69,14 @@ contract HelperConfig is CodeConstants, Script {
         return localNetworkConfig;
     }
 
-    function getSepoliaNetworkConfig()
-        public
-        pure
-        returns (NetworkConfig memory)
-    {
-        return
-            NetworkConfig({
-                entranceFee: 0.01 ether,
-                interval: 30,
-                vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
-                gasLane: 0xe9f223d7d83ec85c4f78042a4845af3a1c8df7757b4997b815ce4b8d07aca68c,
-                subscription_id: 0,
-                callbackGasLimit: 500000
-            });
+    function getSepoliaNetworkConfig() public pure returns (NetworkConfig memory) {
+        return NetworkConfig({
+            entranceFee: 0.01 ether,
+            interval: 30,
+            vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
+            gasLane: 0xe9f223d7d83ec85c4f78042a4845af3a1c8df7757b4997b815ce4b8d07aca68c,
+            subscription_id: 0,
+            callbackGasLimit: 500000
+        });
     }
 }
