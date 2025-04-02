@@ -81,7 +81,7 @@ contract RaffleTest is Test, CodeConstants {
         vm.warp(block.timestamp + interval + 1);
         vm.roll(block.number + 1);
 
-        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
+        (bool upkeepNeeded,) = raffle.checkUpkeep("");
         assert(!upkeepNeeded);
     }
 
@@ -93,7 +93,7 @@ contract RaffleTest is Test, CodeConstants {
         vm.roll(block.number + 1);
         raffle.performUpkeep("");
 
-        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
+        (bool upkeepNeeded,) = raffle.checkUpkeep("");
         assert(!upkeepNeeded);
     }
 
@@ -104,7 +104,7 @@ contract RaffleTest is Test, CodeConstants {
         vm.warp(block.timestamp + interval - 1);
         vm.roll(block.number + 1);
 
-        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
+        (bool upkeepNeeded,) = raffle.checkUpkeep("");
         assert(!upkeepNeeded);
     }
 
@@ -124,10 +124,7 @@ contract RaffleTest is Test, CodeConstants {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                Raffle.Raffle__UpkeepNotNeeded.selector,
-                currentBalance,
-                numPlayers,
-                uint256(raffleState)
+                Raffle.Raffle__UpkeepNotNeeded.selector, currentBalance, numPlayers, uint256(raffleState)
             )
         );
         raffle.performUpkeep("");
@@ -148,10 +145,7 @@ contract RaffleTest is Test, CodeConstants {
         _;
     }
 
-    function testPerformUpKeepUpdatesRaffleStateAndEmitsRequestId()
-        public
-        raffleEntered
-    {
+    function testPerformUpKeepUpdatesRaffleStateAndEmitsRequestId() public raffleEntered {
         vm.recordLogs();
         raffle.performUpkeep("");
         Vm.Log[] memory entries = vm.getRecordedLogs();
@@ -160,30 +154,21 @@ contract RaffleTest is Test, CodeConstants {
         assert(requestId != bytes32(0));
     }
 
-    function testFullfillRandomWordsCanOnlyBeCalledAfterPerformUpkeep(
-        uint256 randomRequestId
-    ) public raffleEntered skipFork {
-        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
-        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(
-            randomRequestId,
-            address(raffle)
-        );
-    }
-
-    function testFullfillRandomWordsPicksAWinnerAndResetsAndSendsMoney()
+    function testFullfillRandomWordsCanOnlyBeCalledAfterPerformUpkeep(uint256 randomRequestId)
         public
         raffleEntered
         skipFork
     {
+        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(randomRequestId, address(raffle));
+    }
+
+    function testFullfillRandomWordsPicksAWinnerAndResetsAndSendsMoney() public raffleEntered skipFork {
         uint256 additionalEntrants = 3; //4 in total
         uint256 startingIndex = 1; //0 is the PLAYER
         address expectedWinner = address(1);
 
-        for (
-            uint256 i = startingIndex;
-            i < startingIndex + additionalEntrants;
-            i++
-        ) {
+        for (uint256 i = startingIndex; i < startingIndex + additionalEntrants; i++) {
             hoax(address(uint160(i)), 3 ether);
             raffle.enterRaffle{value: entranceFee}();
         }
@@ -195,10 +180,7 @@ contract RaffleTest is Test, CodeConstants {
         raffle.performUpkeep("");
         Vm.Log[] memory entries = vm.getRecordedLogs();
         bytes32 requestId = entries[1].topics[1];
-        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(
-            uint256(requestId),
-            address(raffle)
-        );
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(uint256(requestId), address(raffle));
 
         address recentWinner = raffle.getRecentWinner();
         Raffle.RaffleState raffleState = raffle.getRaffleState();
@@ -206,11 +188,7 @@ contract RaffleTest is Test, CodeConstants {
         uint256 endingTimeStamp = raffle.getLastTimeStamp();
         uint256 prize = entranceFee * (additionalEntrants + 1);
 
-        console.log(
-            "Raffle winner: %s, expected winner: %s",
-            address(recentWinner),
-            address(expectedWinner)
-        );
+        console.log("Raffle winner: %s, expected winner: %s", address(recentWinner), address(expectedWinner));
         assert(recentWinner == expectedWinner);
         assert(raffleState == Raffle.RaffleState.OPEN);
         assert(endingTimeStamp > startingTimeStamp);

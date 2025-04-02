@@ -36,9 +36,7 @@ contract HelperConfig is CodeConstants, Script {
         networkConfigs[ETH_SEPOLIA_CHAIN_ID] = getSepoliaNetworkConfig();
     }
 
-    function getConfigByChainId(
-        uint256 chainId
-    ) public returns (NetworkConfig memory) {
+    function getConfigByChainId(uint256 chainId) public returns (NetworkConfig memory) {
         if (networkConfigs[chainId].vrfCoordinator != address(0)) {
             return networkConfigs[chainId];
         } else if (chainId == LOCAL_CHAIN_ID) {
@@ -59,11 +57,8 @@ contract HelperConfig is CodeConstants, Script {
         }
         console.log("Creating AnvilEthConfig");
         vm.startBroadcast();
-        VRFCoordinatorV2_5Mock vrfCoordinatorMock = new VRFCoordinatorV2_5Mock(
-            MOCK_BASE_FEE,
-            MOCK_GAS_PRICE_LINK,
-            MOCK_WEI_PER_UNIT_LINK
-        );
+        VRFCoordinatorV2_5Mock vrfCoordinatorMock =
+            new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE_LINK, MOCK_WEI_PER_UNIT_LINK);
         LinkToken linkToken = new LinkToken();
         vm.stopBroadcast();
         console.log("vrfCoordinatorMock: ", address(vrfCoordinatorMock));
@@ -80,21 +75,16 @@ contract HelperConfig is CodeConstants, Script {
         return localNetworkConfig;
     }
 
-    function getSepoliaNetworkConfig()
-        public
-        pure
-        returns (NetworkConfig memory)
-    {
-        return
-            NetworkConfig({
-                entranceFee: 0.01 ether,
-                interval: 30,
-                vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
-                gasLane: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
-                subscription_id: 77325813695134431796599483816189256045402184623430953434934917556292843105551,
-                callbackGasLimit: 500000,
-                link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
-                account: 0x7cddB55deEda4BB3F0CE3564Ea7c79d17ccEcbdf
-            });
+    function getSepoliaNetworkConfig() public pure returns (NetworkConfig memory) {
+        return NetworkConfig({
+            entranceFee: 0.01 ether,
+            interval: 30,
+            vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
+            gasLane: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
+            subscription_id: 77325813695134431796599483816189256045402184623430953434934917556292843105551,
+            callbackGasLimit: 500000,
+            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+            account: 0x7cddB55deEda4BB3F0CE3564Ea7c79d17ccEcbdf
+        });
     }
 }
